@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    HELLO WORLD!
+    <div id="pd-1">
+        <h2>SCHEMAT HORNERA W JS</h2>
+        <h4>Podaj stopień wielomianu</h4>
+        <label for="polynomialDeg">Stopień wielomianu</label>
+        <input type="number" min="0" id="polynomialDeg">
+        <br><br>
+        <button id="confirmPolynomialDeg">ZATWIERDŹ STOPIEŃ</button>
+        <div class="inputs"></div>
+        <br><br>
+        <button id="calculate">OBLICZ</button>
+        <button id="resetForm">RESETUJ</button>
+    </div>
     <script src="script.js"></script>
 </body>
+
 </html>
