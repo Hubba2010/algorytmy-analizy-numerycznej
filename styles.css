@@ -1,10 +1,19 @@
-.inputs {
-	margin-top: 30px;
+.flex-column {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 50px;
 }
 
-.inputs input {
-	width: 100px;
+.flex-row {
+	display: flex;
+	align-items: center;
+	gap: 40px;
+}
+
+.flex-row img {
+	width: 150px;
+}
+
+.flex-row button {
+	height: 30px;
 }

@@ -1,125 +1,106 @@
-let factorsArray = [];
-let xValue;
+const allTrapezoids = document.querySelectorAll('.trapezoid');
+const allSimpsons = document.querySelectorAll('.simpson');
 
-////////////// UI
+function firstFunction(x) {
+	return Math.sqrt(1 + x);
+}
+function secondFunction(x) {
+	return Math.sin(x) ** 2 + 2;
+}
+function thirdFunction(x) {
+	return Math.exp(x) * 2 * x ** 3;
+}
 
-const parent = document.getElementById('pd-1');
-const polynomialDegInput = document.getElementById('polynomialDeg');
-const polynomialDegBtn = document.getElementById('confirmPolynomialDeg');
-const calculateBtn = document.getElementById('calculate');
-const resetFormBtn = document.getElementById('resetForm');
-const inputsDiv = document.querySelector('.inputs');
+function trapezoidal(a, b, n, fn) {
+	let h = (b - a) / n;
+	let s = fn(a) + fn(b);
+	for (let i = 1; i < n; i++) s += 2 * fn(a + i * h);
+	return (h / 2) * s;
+}
 
-polynomialDegBtn.addEventListener('click', () => {
-	if (document.querySelectorAll('.factor').length) {
-		return;
+function simpson(ll, ul, n, fn) {
+	let h = (ul - ll) / n;
+	let x = [];
+	let fx = [];
+
+	for (let i = 0; i <= n; i++) {
+		x[i] = ll + i * h;
+		fx[i] = fn(x[i]);
 	}
-	const polDegree = +polynomialDegInput.value;
-	if (!polDegree && polDegree !== 0) {
-		return;
+	let res = 0;
+	for (let i = 0; i <= n; i++) {
+		if (i == 0 || i == n) res += fx[i];
+		else if (i % 2 != 0) res += 4 * fx[i];
+		else res += 2 * fx[i];
 	}
-	for (let i = 0; i <= polDegree; i++) {
-		const numInput = document.createElement('input');
-		const inputLabel = document.createElement('label');
-		numInput.setAttribute('type', 'number');
-		numInput.setAttribute('id', i);
-		inputLabel.setAttribute('for', i);
-		inputLabel.setAttribute('class', 'inputLabel');
-		inputLabel.textContent = `Współczynnik ${polDegree - i} potęgi x [x^${
-			polDegree - i
-		}]:`;
-		numInput.classList.add('factor');
-		inputsDiv.appendChild(inputLabel);
-		inputsDiv.appendChild(numInput);
-	}
-	const xValueInput = document.createElement('input');
-	const xValueLabel = document.createElement('label');
-	xValueInput.setAttribute('type', 'number');
-	xValueInput.setAttribute('id', 'xValue');
-	xValueLabel.setAttribute('for', 'xValue');
-	xValueLabel.setAttribute('id', 'xValueLabel');
-	xValueLabel.textContent = 'Wartość x: ';
-	inputsDiv.appendChild(xValueLabel);
-	inputsDiv.appendChild(xValueInput);
-	console.log(polDegree);
-});
+	res = res * (h / 3);
+	return res;
+}
 
-resetFormBtn.addEventListener('click', () => {
-	removeInputs();
-	polynomialDegInput.value = '';
-});
-
-calculateBtn.addEventListener('click', () => {
-	if (!document.querySelectorAll('.factor').length) {
-		return;
-	}
-	setInputValues();
-	setXValue();
-	Horner(+polynomialDegInput.value, factorsArray, xValue);
-});
-
-function removeInputs() {
-	const inputs = document.querySelectorAll('.factor');
-	const inputLabels = document.querySelectorAll('.inputLabel');
-	inputs.forEach((input) => {
-		input.remove();
+allTrapezoids.forEach((btn) => {
+	btn.addEventListener('click', (e) => {
+		let grids = prompt('Podaj ilosc przedzialow :)', '1');
+		const element = e.target.parentNode;
+		const index = Array.from(element.parentNode.children).indexOf(element) + 1;
+		switch (index) {
+			case 1:
+				console.log(
+					'Wartosc calki dzieki z wzoru trapezow (1 funkcja): ' +
+						Math.round(trapezoidal(0, 1, grids, firstFunction) * 10000.0) /
+							10000.0
+				);
+				break;
+			case 2:
+				console.log(
+					'Wartosc calki dzieki z wzoru trapezow (2 funkcja): ' +
+						Math.round(
+							trapezoidal(0, 2 * Math.PI, grids, secondFunction) * 10000.0
+						) /
+							10000.0
+				);
+				break;
+			case 3:
+				console.log(
+					'Wartosc calki dzieki z wzoru trapezow (3 funkcja): ' +
+						Math.round(trapezoidal(0, 2, grids, thirdFunction) * 10000.0) /
+							10000.0
+				);
+				break;
+		}
 	});
-	inputLabels.forEach((label) => {
-		label.remove();
+});
+
+allSimpsons.forEach((btn) => {
+	btn.addEventListener('click', (e) => {
+		let grids = prompt('Podaj ilosc przedzialow :)', '1');
+		const element = e.target.parentNode;
+		const index = Array.from(element.parentNode.children).indexOf(element) + 1;
+		if (grids % 2 !== 0) {
+			console.error('Liczba przedziałów nieparzysta. Błędne dane');
+			return;
+		}
+		switch (index) {
+			case 1:
+				console.log(
+					'Wartosc calki dzieki z wzoru simpsona (1 funkcja): ' +
+						Math.round(simpson(0, 1, grids, firstFunction) * 10000.0) / 10000.0
+				);
+				break;
+			case 2:
+				console.log(
+					'Wartosc calki dzieki z wzoru simpsona (2 funkcja): ' +
+						Math.round(
+							simpson(0, 2 * Math.PI, grids, secondFunction) * 10000.0
+						) /
+							10000.0
+				);
+				break;
+			case 3:
+				console.log(
+					'Wartosc calki dzieki z wzoru simpsona (3 funkcja): ' +
+						Math.round(simpson(0, 2, grids, thirdFunction) * 10000.0) / 10000.0
+				);
+				break;
+		}
 	});
-	document.getElementById('xValueLabel').remove();
-	document.getElementById('xValue').remove();
-}
-
-function setInputValues() {
-	factorsArray = Array.from(document.querySelectorAll('.factor')).map(
-		(input) => +input.value
-	);
-	console.log('Współczynniki: ', factorsArray);
-}
-
-function setXValue() {
-	xValue = +document.getElementById('xValue').value;
-	console.log('Wartość x: ', xValue);
-}
-
-///////////////////////////////// Algorithms
-
-function Horner(degree, factorsTable, xValue) {
-	let state;
-	let result = [];
-
-	for (let i = 0; i <= degree; i++) {
-		for (let j = 0; j <= degree - i; j++) {
-			if (j === 0) {
-				state = factorsTable[j];
-			} else {
-				factorsTable[j] += xValue * factorsTable[j - 1];
-			}
-			state = factorsTable[j];
-		}
-		result[i] = state * Factorial(i);
-	}
-
-	for (let k = 0; k < degree + 1; k++) {
-		if (k === 0) {
-			console.log(`Wartosc funkcji w punkcie x: ${result[k]}`);
-		} else {
-			console.log(`Pochodna ${k}-tego rzędu: ${result[k]}`);
-		}
-	}
-}
-
-function Factorial(num) {
-	if (num < 0) {
-		return;
-	} else if (num === 0) {
-		return 1;
-	} else {
-		let fact = 1;
-		for (i = 1; i <= num; i++) {
-			fact *= i;
-		}
-		return fact;
-	}
-}
+});
